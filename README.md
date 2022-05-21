@@ -2,9 +2,9 @@
 
 This project implement a front end of  the compiler. The first step is define a context free grammar. We know that a context free grammar G can be defined by four tuples as:
 
-'''
-G= (V, T, P, S)  
-'''
+```
+G= (V, T, P, S)
+```
 
 Where
 
@@ -26,32 +26,32 @@ block &rarr begin
     command_sequence
     end
 
-variable_declaration &rarr &epsilon | Type : id_lists ; | variable_declaration
+variable_declaration &#8594; &epsilon | Type : id_lists ; | variable_declaration
 
-id_lists &rarr identifier ; | identifier, id_lists
+id_lists &#8594; identifier ; | identifier, id_lists
 
-command_sequence &rarr &epsilon | command | command_sequence
+command_sequence &#8594; &epsilon | command | command_sequence
 
-command &rarr selection | loop | assignment
+command &#8594; selection | loop | assignment
 
-selection &rarr if ( condition ) then block else block
+selection &#8594; if ( condition ) then block else block
           
-          &rarr if ( condition ) then bloco
+          &#8594; if ( condition ) then bloco
 
-loop &rarr while (condition) do block
+loop &#8594; while (condition) do block
          
-         &rarr repeat block while ( condition )
+         &#8594; repeat block while ( condition )
 
-assigment &rarr identify := expression
+assigment &#8594; identify := expression
 
-condition &rarr expression relational_operator expression
+condition &#8594; expression relational_operator expression
 
-expression &rarr identify | constant | ( expression ) | expression relational_operator expression
+expression &#8594; identify | constant | ( expression ) | expression relational_operator expression
 
-constant &rarr number | character
+constant &#8594; number | character
 
-comments &rarr [any_word]
+comments &#8594; [any_word]
 
 
-    
+​    
 
