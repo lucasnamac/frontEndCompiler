@@ -27,17 +27,29 @@ block &rarr begin
     end
 
 variable_declaration &rarr &epsilon | Type : id_lists ; | variable_declaration
+
 id_lists &rarr identifier ; | identifier, id_lists
+
 command_sequence &rarr &epsilon | command | command_sequence
+
 command &rarr selection | loop | assignment
+
 selection &rarr if ( condition ) then block else block
+          
           &rarr if ( condition ) then bloco
+
 loop &rarr while (condition) do block
-          &rarr repeat block while ( condition )
+         
+         &rarr repeat block while ( condition )
+
 assigment &rarr identify := expression
+
 condition &rarr expression relational_operator expression
+
 expression &rarr identify | constant | ( expression ) | expression relational_operator expression
+
 constant &rarr number | character
+
 comments &rarr [any_word]
 
 
