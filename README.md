@@ -2,7 +2,7 @@
 
 This project implement a front end of  the compiler. 
 
-### [1 - language specificaition](https://github.com/lucasnamac/frontEndCompiler/blob/main/SpecificationLanguage.pdf)
+### [1 - language specificaition](https://github.com/lucasnamac/frontEndCompiler/blob/main/LanguageSpecification.pdf)
 ### [2 - lexical analysis]()
 ### [3 - semantics analysis]()
 ### [4 - syntax-directed translation]()
