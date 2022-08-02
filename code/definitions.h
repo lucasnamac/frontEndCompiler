@@ -164,9 +164,35 @@ struct table{
     struct table *prox;
 };
 
+typedef struct aa{
+    int positionSymbolTable;
+    int ini;
+    int prox;
+    int currentLine;
+    int currentColumn;
+}AuxiliarAtributte;
 
+
+typedef struct first{
+    char* name;
+}First;
+
+typedef struct hash{
+    int qtd, size;
+    First **first;
+}Hash;
+
+//Lexical analyzer
+int nextchar(char *buffer, int prox, char *c);
+char* getLexeme(char *buffer, int ini, int prox);
+Token lexicalAnalyzer(char *buffer, AuxiliarAtributte *auxiliar, struct table **st);
+
+//Symbol Table
 int addLast(struct table **st, char* name_tk, char* lexeme, int position);
-
 void printSymbolTable(struct table  *st);
-
 int exists(struct table *st, char *lexeme);
+
+//Syntatic analyzer
+int syntacticAnalyzer(char *buffer, AuxiliarAtributte *auxiliar, struct table **st);
+void ProductionS(char *buffer, AuxiliarAtributte *auxiliar, struct table **st);
+Token getToken(char *buffer, AuxiliarAtributte *auxiliar, struct table **st);

@@ -1,13 +1,18 @@
 programa meuprograma
-    [ Esse é um simples programa que verifica se x>y e conta]
     begin
-    int:x;
-    int:y;
-    float cont;
-    x:=50;
-    y:20;
-    if(x>y) then
-        cont:=cont+50;
-    else
-    cont:= cont-1;
-end  
+        int:a,b;
+        [Esse é um simples programa que verifica se x>y e conta]
+        int:x;
+        int:y;
+        float:cont;
+        x:=50;
+        y:=20;
+        if(x>y) then
+            begin
+                cont:=cont+50;
+            end
+        else
+            begin
+        cont:= cont-1;
+            end
+    end  

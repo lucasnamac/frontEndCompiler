@@ -26,12 +26,11 @@ int addLast(struct table **st, char* name_tk, char* lexeme, int position){
         return 1;
     }
 
+    printf("cai aqui tbm\n");
     return 0;
     
 
 }
-
-
 
 void printSymbolTable(struct table *st){
     struct table *tmp = st;

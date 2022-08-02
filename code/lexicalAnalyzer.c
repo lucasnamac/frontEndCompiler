@@ -15,40 +15,37 @@ int nextchar(char *buffer, int prox, char *c){
 }
 
 
-char* getLexeme(char *buffer, int *ini, int *prox){
-    char *lexeme = (char*) malloc(sizeof(((*prox)-(*ini))+1));
-    for(int i=(*ini); i<((*prox)); i++){
+char* getLexeme(char *buffer, int ini, int prox){
+    char *lexeme = (char*) malloc(sizeof(((prox)-(ini))+1));
+    for(int i=ini; i<prox; i++){
         strncat(lexeme, &buffer[i], 1);
     }
-    lexeme =strtok(lexeme, "\n");
-    lexeme =strtok(lexeme, " ");
-    
     return lexeme;
 } 
 
 
-Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int *position_symbolTable, int *current_line){
+Token lexicalAnalyzer(char *buffer, AuxiliarAtributte *auxiliar, struct table **st){
     int current_state = INITIAL_STATE;
     char c;
     Token tk;
-    int current_column=0;
     int aux;
 
     while(1){
         
-        if(nextchar(buffer, *prox, &c)==0){
-            Token tk;
-            tk.name_tk=(char*)"-1";
+        if(nextchar(buffer, auxiliar->prox, &c)==0){
+            tk.name_tk=(char*)"$";
+            tk.attr = (char*)"";
             return tk;
         }
 
+        //printf("current state %d and letter read %c\n", current_state, c);
         switch (current_state){
             
             case INITIAL_STATE:
                 
                 if(c=='p'){
                     current_state = S19;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
                 
                 else if(c=='\n' || c=='\t' || c==' '){
@@ -56,7 +53,7 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }
                 else if(c=='['){
                     current_state = S64S111;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
                 else if(c==';'){
                     current_state = S59;
@@ -69,43 +66,43 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }
                 else if(c=='f'){
                     current_state = S45;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
                 else if(c=='t'){
                     current_state = S114;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
                 else if(c=='e'){
                     current_state = S29S96;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
                 else if(c=='d'){
                     current_state = S85;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
                 else if(c=='i'){
                     current_state = S41S120;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
                 else if(c=='r'){
                     current_state = S77;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
                 else if(c=='\''){
                     current_state = S15;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
                 else if(c=='b'){
                     current_state = S34;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
                 else if(c=='w'){
                     current_state = S89;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
                 else if(c=='c'){
                     current_state = S51;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
 
                 else if(c=='='){
@@ -114,12 +111,12 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
 
                 else if(isdigit(c)>0){
                     current_state = S67;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
 
                 else if(c==':'){
                     current_state = S60;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
                 else if(c==','){
                     current_state = S63;;
@@ -127,7 +124,7 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
 
                 else if(c=='~'){
                     current_state = S8;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
                 else if(c=='+'){
                     current_state = S103;
@@ -147,24 +144,28 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 
                 else if(isalpha(c)!=0 || c=='_'){
                     current_state = S2;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
 
                 else if(c=='<'){
                     current_state = S5;
-                    (*prox)++;
+                    auxiliar->prox++;
  
                 }
                 
                 else if(c=='>'){
                     current_state = S11;
-                    (*prox)++;
+                    auxiliar->prox++;
 
                 }
                 else{
-                    printf("not recognized %c\n", c);              
+                    printf("token not recognized -> %c in position %dl %dc \n", c,  auxiliar->currentLine, auxiliar->currentColumn);
+                    tk.name_tk = (char*)"$";
+                    tk.attr = (char*)"";
+
+                    return tk;       
                 }
-                current_column++;
+                auxiliar->currentColumn++;
                 
             break;
 
@@ -175,8 +176,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S20:
@@ -188,8 +189,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                     current_state = S2;
                     
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
 
             break;
             case S21:
@@ -199,8 +200,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 else{
                     current_state = S2;                  
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
 
             break;
 
@@ -212,8 +213,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                     current_state = S2;
 
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S23:
@@ -223,8 +224,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S24:
@@ -234,8 +235,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
 
             break;
 
@@ -247,8 +248,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                     current_state = S2;    
                     
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S26: //Look ahead 
@@ -257,7 +258,7 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }
                 else{
                     current_state = S2;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
                 
             break;
@@ -266,9 +267,9 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 tk.name_tk = (char*)"PROGRAMA";
                 tk.attr= (char*) "none";
                 current_state = INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
                 //(*prox)++; Apaguei agora
-                *ini=*prox;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             
             break;
@@ -276,48 +277,49 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
             
             case S108:
                 if(c=='\n'){
-                    (*current_line)++;
-                    current_column=1;
+                    auxiliar->currentLine++;
+                    auxiliar->currentColumn=1;
                 }
                 current_state = INITIAL_STATE;
-                (*prox)++;
-                *ini = *prox;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->ini = auxiliar->prox;
+                auxiliar->currentColumn++;
             break;
 
             case S15:
                 if(isalpha(c)!=0){
                     current_state = S16;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
             
             case S16:
                 if(c=='\''){
                 current_state = S17;
                 }
-                current_column++;
+                auxiliar->currentColumn++;
             break;
 
             case S17: //Final state
                 tk.name_tk = (char*)"CHARACTER";
                 current_state = INITIAL_STATE;
-                tk.attr= getLexeme(buffer, ini, prox);
-                printf("Token found in position: %dl %dc  -> ", *current_line, *ini);
-                (*prox)++;
-                *ini=*prox;
+                tk.attr= getLexeme(buffer, auxiliar->ini, auxiliar->prox);
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->ini, tk.name_tk, tk.attr);
+                auxiliar->prox++;
+                auxiliar->ini = auxiliar->prox;
                 return tk;
             break;
             
             case S34:
                 if(c=='e'){
                     current_state = S35;
+                    auxiliar->prox++;
                 }else{
                     current_state  = S2;
                 }
-                (*prox)++;
-                current_column++;
+                
+                auxiliar->currentColumn++;
             break;
 
             case S35:
@@ -327,8 +329,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S36:
@@ -338,8 +340,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S37:
@@ -349,8 +351,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S38: //Look ahead
@@ -365,11 +367,11 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
 
             case S39: //Final state
                 tk.name_tk = (char*)"BEGIN";
-                strcpy(tk.attr, "none");
+                tk.attr =  (char*)"none";
                 current_state = INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
                 //(*prox)++;
-                *ini=*prox;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             
             break;
@@ -378,9 +380,9 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 tk.name_tk = (char*)"RELOP";
                 tk.attr = (char*) "EQ";
                 current_state = INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
-                (*prox)++;
-                *ini=*prox;
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
+                auxiliar->prox++;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
 
@@ -388,7 +390,7 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 if(c=='='){
                     current_state = S9;
                 }
-                current_column++;
+                auxiliar->currentColumn++;
             break;
 
             case S9:  //Final state token: ~=
@@ -396,11 +398,11 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                     tk.name_tk = (char*)"RELOP";
                     tk.attr = (char*) "NE";
                     current_state = INITIAL_STATE;
-                    printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
-                    (*prox)++;
-                    *ini=*prox;
+                    printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
+                    auxiliar->prox++;
+                    auxiliar->ini=auxiliar->prox;
                 }
-                current_column++;
+                auxiliar->currentColumn++;
                 return tk;
             break;
 
@@ -418,9 +420,9 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 tk.name_tk = (char*)"RELOP";
                 tk.attr = (char*) "GE";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
                 //(*prox)++;
-                *ini=*prox;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
 
@@ -428,9 +430,9 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 tk.name_tk = (char*)"RELOP";
                 tk.attr = (char*) "GT";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
                 //(*prox)++;
-                *ini=*prox;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
 
@@ -441,7 +443,7 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S7;
                 }
-                current_column++;
+                auxiliar->currentColumn++;
 
             break;
 
@@ -449,9 +451,9 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 tk.name_tk = (char*)"RELOP";
                 tk.attr = (char*) "LE";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
-                (*prox)++;
-                *ini=*prox;
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
+                auxiliar->prox++;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
             
@@ -459,9 +461,9 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 tk.name_tk = (char*)"RELOP";
                 tk.attr = (char*) "LT";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
+                printf("Token found in position: %dl %dc  -> ", auxiliar->currentLine, auxiliar->currentColumn);
                 //(*prox)++;
-                *ini=*prox;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
             
@@ -478,48 +480,54 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
 
             case S62: //Final state
                 tk.name_tk = (char*)"ASSIGN";
-                strcpy(tk.attr, "none");
+                tk.attr = (char*) "none";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
-                (*prox)++;
-                *ini=*prox;
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
+                auxiliar->prox++;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
 
             case S61: //Final state
                 tk.name_tk = (char*)"TWO_POINTS";
-                strcpy(tk.attr, "none");
+                tk.attr = (char*)"none";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
                 //(*prox)++;
-                *ini=*prox;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
 
             case S67:
                 if(isdigit(c)>0){
                     current_state = S67;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
                 else if(c=='.'){
                     current_state = S69;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
                 else if(c=='E'|| c=='e'){
                     current_state = S72;
-                    (*prox)++;
+                    auxiliar->prox++;
+                
+                }else if(c=='_' || (isalpha(c)!=0 && c!='E' && c!='e')){
+                    printf("Error in line %d and %d column\n", auxiliar->currentLine, auxiliar->currentColumn);
+                    current_state = INITIAL_STATE;
+                    tk.name_tk = (char*)"$";
+                    return tk;
                 }else{
                     current_state = S4;
                 }
-                current_column++;
+                auxiliar->currentColumn++;
             break;
 
             case S69:
                 if(isdigit(c)>0){
                     current_state = S70;   
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S72:
@@ -529,24 +537,26 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 else if(c=='+' | c=='-'){
                     current_state = S73;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S4:
                 tk.name_tk = (char*)"INT";
-                tk.attr = (char*)malloc(sizeof(position_symbolTable));
-                sprintf(tk.attr, "%d", *position_symbolTable);
+                tk.attr = (char*)malloc(sizeof(auxiliar->positionSymbolTable));
+                sprintf(tk.attr, "%d", auxiliar->positionSymbolTable);
                 current_state=INITIAL_STATE;
                 //Check if position alredy exists in symbol table before of call 
                 
-                if(exists(*st, getLexeme(buffer, ini, prox))==0){
-                    addLast(st, tk.name_tk, getLexeme(buffer, ini, prox), *position_symbolTable);
+                if(exists(*st, getLexeme(buffer, auxiliar->ini, auxiliar->prox))==0){
+                    addLast(st, tk.name_tk, getLexeme(buffer, auxiliar->ini, auxiliar->prox), auxiliar->positionSymbolTable);
                 }
-                (*position_symbolTable)++;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
+                
+
+                auxiliar->positionSymbolTable++;
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
                 //(*prox)++;
-                *ini=*prox;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
 
@@ -554,121 +564,127 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 
                 if(isdigit(c)>0){
                     current_state = S70;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
                 else if(c=='E' || c=='e'){
                     current_state= S72;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }else{
                     current_state = S71;
                 }
-                current_column++;
+                auxiliar->currentColumn++;
                 break;
             
             case S74:
                         
                 if(isdigit(c)>0){
                     current_state = S74;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
                 else{
                     current_state = S75;
                 }
-                current_column++;
+                auxiliar->currentColumn++;
             break;
 
             case S73:
                 if(isdigit(c)>0){
                     current_state = S74;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S71:
                 tk.name_tk = (char*)"FLOAT";
-                tk.attr = (char*)malloc( sizeof(position_symbolTable));
-                sprintf(tk.attr, "%d", *position_symbolTable);
+                tk.attr = (char*)malloc( sizeof(auxiliar->positionSymbolTable));
+                sprintf(tk.attr, "%d", auxiliar->positionSymbolTable);
                 current_state=INITIAL_STATE;
                 //Check if position alredy exists in symbol table before of call 
                 
-                if(exists(*st, getLexeme(buffer, ini, prox))==0){
-                    addLast(st, tk.name_tk, getLexeme(buffer, ini, prox), *position_symbolTable);
+                
+                if(exists(*st, getLexeme(buffer, auxiliar->ini, auxiliar->prox))==0){
+                    addLast(st, tk.name_tk, getLexeme(buffer, auxiliar->ini, auxiliar->prox), auxiliar->positionSymbolTable);
                 }
-                (*position_symbolTable)++;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
+                
+
+                auxiliar->positionSymbolTable++;
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
                 //(*prox)++;
-                *ini=*prox;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
 
             case S75:
                 tk.name_tk = (char*)"EXPONENTIAL";
-                tk.attr = (char*)malloc( sizeof(position_symbolTable));
-                sprintf(tk.attr, "%d", *position_symbolTable);
+                tk.attr = (char*)malloc( sizeof(auxiliar->positionSymbolTable));
+                sprintf(tk.attr, "%d", auxiliar->positionSymbolTable);
                 current_state=INITIAL_STATE;
                 //Check if position alredy exists in symbol table before of call 
                 
-                if(exists(*st, getLexeme(buffer, ini, prox))==0){
-                    addLast(st, tk.name_tk, getLexeme(buffer, ini, prox), *position_symbolTable);
+                
+                if(exists(*st, getLexeme(buffer, auxiliar->ini, auxiliar->prox))==0){
+                    addLast(st, tk.name_tk, getLexeme(buffer, auxiliar->ini, auxiliar->prox), auxiliar->positionSymbolTable);
                 }
-                (*position_symbolTable)++;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
+                
+
+                auxiliar->positionSymbolTable++;
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
                 //(*prox)++;
-                *ini=*prox;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
 
             case S103:
                 tk.name_tk = (char*)"ARITHEMETIC_OP";
-                tk.attr = (char*) "none";
+                tk.attr = (char*) "+";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
-                (*prox)++;
-                *ini=*prox;
-                current_column++;
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
+                auxiliar->prox++;
+                auxiliar->ini=auxiliar->prox;
+                auxiliar->currentColumn++;
                 return tk;
 
             case S104:
                 tk.name_tk = (char*)"ARITHEMETIC_OP";
-                tk.attr = (char*)"none";
+                tk.attr = (char*)"-";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
-                (*prox)++;
-                *ini=*prox;
-                current_column++;
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
+                auxiliar->prox++;
+                auxiliar->ini=auxiliar->prox;
+                auxiliar->currentColumn++;
                 return tk;
             
             case S105:
                 tk.name_tk = (char*)"ARITHEMETIC_OP";
-                tk.attr = (char*)"none";
+                tk.attr = (char*)"/";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
-                (*prox)++;
-                *ini=*prox;
-                current_column++;
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
+                auxiliar->prox++;
+                auxiliar->ini=auxiliar->prox;
+                auxiliar->currentColumn++;
                 return tk;
             break;
 
             case S106:
                 tk.name_tk = (char*)"ARITHEMETIC_OP";
-                tk.attr = (char*) "none";
+                tk.attr = (char*) "*";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
-                (*prox)++;
-                *ini=*prox;
-                current_column++;
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
+                auxiliar->prox++;
+                auxiliar->ini=auxiliar->prox;
+                auxiliar->currentColumn++;
                 return tk;
             break;
         
             case S102:
                 tk.name_tk = (char*)"ARITHEMETIC_OP";
-                tk.attr = (char*) "none";
+                tk.attr = (char*) "^";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
-                (*prox)++;
-                *ini=*prox;
-                current_column++;
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
+                auxiliar->prox++;
+                auxiliar->ini=auxiliar->prox;
+                auxiliar->currentColumn++;;
                 return tk;
             break;
 
@@ -678,8 +694,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S52:
@@ -688,8 +704,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state=S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S53:
@@ -698,8 +714,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state=S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S54:
@@ -707,16 +723,16 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 if(isalnum(c)==0 || c!='_'){
                    current_state = S55; 
                 }
-                current_column++;
+                auxiliar->currentColumn++;
             break;
 
             case S55:
                 tk.name_tk = (char*)"TYPE";
-                strcpy(tk.attr, "none");
+                tk.attr = (char*) "none";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
                 //(*prox)++;
-                *ini=*prox;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
 
@@ -727,8 +743,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S90:
@@ -737,8 +753,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S91:
@@ -747,8 +763,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S92:
@@ -757,8 +773,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S93:
@@ -768,26 +784,26 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                current_column++;
+                auxiliar->currentColumn++;
             break;
 
             case S94:
                 tk.name_tk = (char*)"WHILE";
-                strcpy(tk.attr, "none");
+                tk.attr= (char*) "none";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
                 //(*prox)++;
-                *ini=*prox;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
 
             case S63:
                 tk.name_tk = (char*)"COMMA";
-                strcpy(tk.attr, "none");
+                tk.attr= (char*) "none";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
-                (*prox)++;
-                *ini=*prox;
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
+                auxiliar->prox++;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
             
@@ -795,54 +811,54 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 if(c!=']'){
                     current_state = S111;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S111:
                 if(c!=']'){
                     current_state = S111;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }else{
                     current_state = S112;
                 }
-                current_column++;
+                auxiliar->currentColumn++;
                 
             break;
 
             case S112:
-                (*prox)++; //Ignore token
+                auxiliar->prox++; //Ignore token
                 current_state = INITIAL_STATE;
-                current_column++;
+                auxiliar->currentColumn++;
             break;
 
             case S59:
                 tk.name_tk = (char*)"SEMICOLON";
-                strcpy(tk.attr, "none");
+                tk.attr= (char*) "none";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
-                (*prox)++;
-                *ini=*prox;
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
+                auxiliar->prox++;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
 
             case S58:
                 tk.name_tk = (char*)"OPEN_PARENTHESES";
-                strcpy(tk.attr, "none");
+                tk.attr= (char*) "none";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
-                (*prox)++;
-                *ini=*prox;
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
+                auxiliar->prox++;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
 
             case S57:
                 tk.name_tk = (char*)"CLOSE_PARENTHESES";
-                strcpy(tk.attr, "none");
+                tk.attr= (char*) "none";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
-                (*prox)++;
-                *ini=*prox;
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
+                auxiliar->prox++;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
 
@@ -852,8 +868,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S46:
@@ -862,8 +878,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S47:
@@ -872,8 +888,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S48:
@@ -882,8 +898,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S49:
@@ -893,16 +909,16 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                current_column++;
+                auxiliar->currentColumn++;
             break;
 
             case S50:
                 tk.name_tk = (char*)"TYPE";
-                strcpy(tk.attr, "none");
+                tk.attr= (char*) "none";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
                 //(*prox)++;
-                *ini=*prox;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
 
@@ -912,8 +928,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S115:
@@ -922,8 +938,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S116:
@@ -932,8 +948,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S117:
@@ -947,11 +963,11 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
 
             case S118:
                 tk.name_tk = (char*)"THEN";
-                strcpy(tk.attr, "none");
+                tk.attr= (char*) "none";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
                 //(*prox)++;
-                *ini=*prox;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
 
@@ -964,8 +980,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S97:
@@ -974,8 +990,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S98:
@@ -984,8 +1000,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S99:
@@ -993,18 +1009,18 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                     current_state = S100;
                 }else{
                     current_state = S2;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
-                current_column++;
+                auxiliar->currentColumn++;
             break;
 
             case S100:
                 tk.name_tk = (char*)"ELSE";
-                strcpy(tk.attr, "none");
+                tk.attr= (char*) "none";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
                 //(*prox)++;
-                *ini=*prox;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
 
@@ -1014,8 +1030,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S31:
@@ -1026,17 +1042,17 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                     current_state = S2;
                     
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S32:
                 tk.name_tk = (char*)"END";
-                strcpy(tk.attr, "none");
+                tk.attr= (char*) "none";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
                 //(*prox)++;
-                *ini=*prox;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
 
@@ -1046,8 +1062,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S86:
@@ -1056,18 +1072,18 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                     current_state = S87;
                 }else{
                     current_state = S2;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
-                current_column++;
+                auxiliar->currentColumn++;
             break;
 
             case S87:
                 tk.name_tk = (char*)"DO";
-                strcpy(tk.attr, "none");
+                tk.attr= (char*) "none";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
                 //(*prox)++;
-                *ini=*prox;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
 
@@ -1080,8 +1096,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             
             break;
             
@@ -1092,8 +1108,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                     current_state = S2;
                     
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S43:
@@ -1103,18 +1119,18 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }
                 else{
                     current_state = S2;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
-                current_column++;
+                auxiliar->currentColumn++;
             break;
 
             case S44:
                 tk.name_tk = (char*)"TYPE";
-                strcpy(tk.attr, "none");
+                tk.attr= (char*) "none";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
                 //(*prox)++;
-                *ini=*prox;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
 
@@ -1124,17 +1140,17 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                     current_state= S122;
                 }else{
                     current_state = S2;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
-                current_column++;
+                auxiliar->currentColumn++;
             break;
 
             case S122:
                 tk.name_tk = (char*)"IF";
-                strcpy(tk.attr, "none");
+                tk.attr= (char*) "none";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
-                *ini=*prox;
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
 
@@ -1144,8 +1160,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
             
             case S78:
@@ -1154,8 +1170,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S79:
@@ -1164,8 +1180,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S80:
@@ -1174,8 +1190,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S81:
@@ -1184,8 +1200,8 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                 }else{
                     current_state = S2;
                 }
-                (*prox)++;
-                current_column++;
+                auxiliar->prox++;
+                auxiliar->currentColumn++;
             break;
 
             case S82:
@@ -1194,94 +1210,57 @@ Token lexicalAnalyzer(char *buffer, int *prox, int *ini, struct table **st, int 
                     current_state = S83;
                 }else{
                     current_state = S2;
-                    (*prox)++;
+                    auxiliar->prox++;
                 }
-                current_column++;
+                auxiliar->currentColumn++;
             break;
 
             case S83:
                 tk.name_tk = (char*)"REPEAT";
-                strcpy(tk.attr, "none");
+                tk.attr= (char*) "none";
                 current_state=INITIAL_STATE;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n",  auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
                 //(*prox)++;
-                *ini=*prox;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;
 
             case S2:
                 if(isalpha(c)!=0 || c=='_' || isdigit(c)>0){
                     current_state = S2;
-                    
+                    auxiliar->prox++;    
                 }else{
                     current_state = S3;
                 }
-                (*prox)++;
-                current_column++;
+                
+                auxiliar->currentColumn++;
             break;
 
             case S3:
                 tk.name_tk = (char*)"IDENTIFIER";
-                tk.attr = (char*)malloc( sizeof(position_symbolTable));
-                sprintf(tk.attr,"%d", *position_symbolTable);
+                tk.attr = (char*)malloc( sizeof(auxiliar->positionSymbolTable));
+                sprintf(tk.attr,"%d", auxiliar->positionSymbolTable);
                 current_state=INITIAL_STATE;
-                aux =  (*prox)-1;
+                aux =  (auxiliar->prox);
                 //Check if position alredy exists in symbol table before of call 
                 
-                if(exists(*st, getLexeme(buffer, ini, &aux))==0){
-                    addLast(st, (char*)"IDENTIFIER", getLexeme(buffer, ini, &aux), *position_symbolTable);
+                
+                if(exists(*st, getLexeme(buffer, auxiliar->ini, aux))==0){
+                    addLast(st, (char*)"IDENTIFIER", getLexeme(buffer, auxiliar->ini, aux), auxiliar->positionSymbolTable);
                 }
                 
-                (*position_symbolTable)++;
-                printf("Token found in position: %dl %dc  -> ", *current_line, current_column);
+
+                auxiliar->positionSymbolTable++;
+                printf("Token found in position: %dl %dc  -> <%s,%s>\n", auxiliar->currentLine, auxiliar->currentColumn, tk.name_tk, tk.attr);
                 //(*prox)++;
-                *ini=*prox;
+                auxiliar->ini=auxiliar->prox;
                 return tk;
             break;            
           
             default:
-                printf("%s - The token isn't recogninzed\n", getLexeme(buffer, ini, prox));
+                printf("%s - The token isn't recogninzed\n", getLexeme(buffer, auxiliar->ini, auxiliar->prox));
             break;
         
         }
     }
-}
-
-
-int main(){
-
-    int prox=0, ini=0;
-    struct table *st=NULL;
-    int current_line=1;
-    int current_column=1;
-
-    int positionSbolTable=1;
-
-    FILE* file = fopen("./tests/myprogram.txt", "r");
-
-    if(file==NULL){
-        printf("There was an error opening the file. Try again!\n");
-        return 0;
-    }
-    
-    char *buffer = (char*) malloc(sizeof(char)*4096);
-    int current_state = INITIAL_STATE;
-
-
-    fread(buffer, sizeof(char), 4096, file);
-    
-    while(1){
-        Token tk = lexicalAnalyzer(buffer, &prox, &ini, &st, &positionSbolTable, &current_line);
-        printf("<%s,%s>\n", tk.name_tk, tk.attr);
-        if(strcmp(tk.name_tk, "-1")==0) break;
-        
-    }
-
-    
-    printSymbolTable(st);
-    
-    free(buffer);
-    fclose(file);
-
-    return 0;
 }
