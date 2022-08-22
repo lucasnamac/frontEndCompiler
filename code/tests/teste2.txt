@@ -1,0 +1,35 @@
+programa meuprograma
+    begin
+
+    int:x,y;
+    float:z;
+
+    if(x>y) then
+        begin
+            if(x>10) then
+                begin
+                cont:=cont+50;
+                end
+        end
+
+    while(x<y) do
+        begin
+        int:w;
+        end
+
+    repeat
+        begin
+        x := x+1;
+        end
+    while(z<1)
+    
+    end
+
+
+
+
+    programa meuprograma
+    begin
+    int:x,y;
+    float:z;
+    end

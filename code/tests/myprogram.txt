@@ -1,18 +1,17 @@
-programa meuprograma
+programa prog2 [ programa com erro sintatico ]
+begin
+    int : x; float: y;
+
+    x := 0;
+
+    while (x~=10) do
     begin
-        int:a,b;
-        [Esse é um simples programa que verifica se x>y e conta]
-        int:x;
-        int:y;
-        float:cont;
-        x:=50;
-        y:=20;
-        if(x>y) then
-            begin
-                cont:=cont+50;
-            end
-        else
-            begin
-        cont:= cont-1;
-            end
-    end  
+        x := x+1;
+    end
+
+    if (x = 10) then
+    begin
+        y:=1 [erro aqui]
+    end
+end
+

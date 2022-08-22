@@ -52,11 +52,14 @@ void ProductionConstant(char *buffer, AuxiliarAtributte *auxliar, struct table *
         (*identation)++;
         buildTree(fp, identation, tk->name_tk);
         (*identation)--;
+    }else {
+        printf("error\n");
     }
 }
 
 void ProductionTerm(char *buffer, AuxiliarAtributte *auxiliar, struct table **st, FILE *fp, int *identation, Token *tk){
     buildTree(fp, identation, (char*)"TERM");
+    //printf("o que chega em term %s", tk->name_tk);
     if(strcmp(tk->name_tk, "OPEN_PARENTHESES")==0){
         (*identation)++;
         buildTree(fp, identation, tk->name_tk);
@@ -65,7 +68,9 @@ void ProductionTerm(char *buffer, AuxiliarAtributte *auxiliar, struct table **st
         *tk = getToken(buffer, auxiliar, st);
         if(strcmp(tk->name_tk, "CLOSE_PARENTHESES")==0){
             buildTree(fp, identation, tk->name_tk);
-
+        }
+        else{
+            printf("error. expected close parentheses\n");
         }
         (*identation)--;
     }
@@ -112,6 +117,7 @@ void ProductionExp3(char *buffer, AuxiliarAtributte *auxiliar, struct table **st
 void ProductionExp2Line(char *buffer, AuxiliarAtributte *auxiliar, struct table **st, FILE *fp, int *identation, Token *tk){
     buildTree(fp, identation, (char*)"EXP2'");
     *tk = getToken(buffer, auxiliar, st);
+    //printf("aqui chego lendo %s\n", tk->name_tk);
     if(strcmp(tk->name_tk, "ARITHEMETIC_OP")==0 && strcmp(tk->attr, "*")==0){
         (*identation)++;
         buildTree(fp, identation, tk->name_tk);
@@ -132,7 +138,6 @@ void ProductionExp2Line(char *buffer, AuxiliarAtributte *auxiliar, struct table 
         (*identation)--;
     }
     else{
-        //printf("Error in line %d and column %d. Was expected token \"ARITHEMETIC_OP\"\n", auxiliar->currentLine, auxiliar->currentColumn);
         (*identation)++;
         buildTree(fp, identation, (char*)"ε");
         (*identation)--;
@@ -152,12 +157,9 @@ void ProductionExp1Line(char *buffer, AuxiliarAtributte *auxiliar, struct table 
     if(strcmp(tk->name_tk, "ARITHEMETIC_OP")==0 && strcmp(tk->attr, "+")==0){
         (*identation)++;
         buildTree(fp, identation, tk->name_tk);
-        (*identation)++;
-        buildTree(fp, identation, tk->attr);
         (*identation)--;
         *tk = getToken(buffer, auxiliar, st);
         while(strcmp(tk->name_tk, "OPEN_PARENTHESES")==0 || strcmp(tk->name_tk, "IDENTIFIER")==0 || strcmp(tk->name_tk, "INT")==0 || strcmp(tk->name_tk, "CHARACTER")==0){
-            *tk = getToken(buffer, auxiliar, st);
             ProductionExp2(buffer, auxiliar, st, fp, identation, tk);
         }
         (*identation)--;
@@ -168,7 +170,7 @@ void ProductionExp1Line(char *buffer, AuxiliarAtributte *auxiliar, struct table 
         buildTree(fp, identation, tk->name_tk);
         *tk = getToken(buffer, auxiliar, st);
         while(strcmp(tk->name_tk, "OPEN_PARENTHESES")==0 || strcmp(tk->name_tk, "IDENTIFIER")==0 || strcmp(tk->name_tk, "INT")==0 || strcmp(tk->name_tk, "CHARACTER")==0){
-            *tk = getToken(buffer, auxiliar, st);
+            //*tk = getToken(buffer, auxiliar, st);
             ProductionExp2(buffer, auxiliar, st, fp,identation, tk);
         }
         (*identation)--;
@@ -235,6 +237,7 @@ void ProductionVariableDeclaration(char *buffer, AuxiliarAtributte *auxiliar, st
             ProductionIdList(buffer, auxiliar, st, fp, identation, tk);
             if(strcmp(tk->name_tk, "SEMICOLON")==0){
                 buildTree(fp, identation, tk->name_tk);
+                
                 *tk = getToken(buffer, auxiliar, st);
             }
             else{
@@ -261,6 +264,7 @@ void ProductionCondition(char *buffer, AuxiliarAtributte *auxiliar, struct table
         buildTree(fp, identation, tk->name_tk);
         *tk = getToken(buffer, auxiliar, st);
         ProductionExp1(buffer, auxiliar, st, fp, identation, tk);
+        //printf("o que passa aqui %s\n", tk->name_tk);
         (*identation)--;
     }
 }
@@ -290,10 +294,8 @@ void ProductionSelection(char *buffer, AuxiliarAtributte *auxiliar, struct table
             *tk = getToken(buffer, auxiliar, st);
             if(strcmp(tk->name_tk, "THEN")==0){
                 buildTree(fp, identation, tk->name_tk);
-                (*identation)++;
                 *tk = getToken(buffer, auxiliar, st);
                 ProductionBlock(buffer, auxiliar, st, fp, identation, tk);
-                (*identation)--;
                 ProductionSelectionLine(buffer, auxiliar, st, fp, identation, tk);
             }
         }
@@ -310,24 +312,31 @@ void ProductionAssign(char *buffer, AuxiliarAtributte *auxiliar, struct table **
             buildTree(fp, identation, tk->name_tk);
             return;
         }
+        else{
+            printf("Error in line %d and column %d. Was expected token \"SEMICOLON\"\n", auxiliar->currentLine, auxiliar->currentColumn);
+            return;
+        }
     }
 
 }
 
 void ProductionLoop(char *buffer, AuxiliarAtributte *auxiliar, struct table **st, FILE *fp, int *identation, Token *tk){
-
+    //printf("valor no repeat %s\n", tk->name_tk);
     if(strcmp(tk->name_tk, "WHILE")==0){
         buildTree(fp, identation, tk->name_tk);
         *tk = getToken(buffer, auxiliar, st);
         if(strcmp(tk->name_tk, "OPEN_PARENTHESES")==0){
             ProductionCondition(buffer, auxiliar, st, fp, identation, tk);
-            *tk = getToken(buffer, auxiliar, st);
+            //*tk = getToken(buffer, auxiliar, st);
             if(strcmp(tk->name_tk, "CLOSE_PARENTHESES")==0){
                 buildTree(fp, identation, tk->name_tk);
                 *tk = getToken(buffer, auxiliar, st);
+                //printf("entao aqui e end %s\n", tk->name_tk);
+                
                 if(strcmp(tk->name_tk, "DO")==0){
                     buildTree(fp, identation, tk->name_tk);
-                    buildTree(fp, identation, (char*)"BLOCK");
+                    //buildTree(fp, identation, (char*)"BLOCK");
+                    *tk = getToken(buffer, auxiliar, st);
                     ProductionBlock(buffer, auxiliar, st, fp, identation, tk);
                 }
                 else{
@@ -342,20 +351,24 @@ void ProductionLoop(char *buffer, AuxiliarAtributte *auxiliar, struct table **st
         else{
             printf("Error in line %d and column %d. Was expected token \"OPEN_PARENTHSES\"\n", auxiliar->currentLine, auxiliar->currentColumn);
         }
+        //*tk=getToken(buffer, auxiliar, st);
     }
     else if(strcmp(tk->name_tk, "REPEAT")==0){
         buildTree(fp, identation, tk->name_tk);
-        ProductionBlock(buffer, auxiliar, st, fp, identation, tk);
-        *tk = getToken(buffer, auxiliar, st);
+        *tk =getToken(buffer, auxiliar, st);
+        ProductionBlock(buffer, auxiliar, st, fp, identation, tk);   
         if(strcmp(tk->name_tk, "WHILE")==0){
+            (*identation)++;
             buildTree(fp, identation, tk->name_tk);
             *tk = getToken(buffer, auxiliar, st);
             if(strcmp(tk->name_tk, "OPEN_PARENTHESES")==0){
                 buildTree(fp, identation, tk->name_tk);
                 ProductionCondition(buffer, auxiliar, st, fp, identation, tk);
-                *tk = getToken(buffer, auxiliar, st);
+                //*tk = getToken(buffer, auxiliar, st);
+                //printf("o que cai aqui %s\n", tk->name_tk);
                 if(strcmp(tk->name_tk, "CLOSE_PARENTHESES")==0){
                     buildTree(fp, identation, tk->name_tk);
+                    *tk = getToken(buffer, auxiliar, st);
                     return;
                 }
                 else{
@@ -365,6 +378,7 @@ void ProductionLoop(char *buffer, AuxiliarAtributte *auxiliar, struct table **st
             else{
                 printf("Error in line %d and column %d. Was expected token \"OPEN_PARENTHSES\"\n", auxiliar->currentLine, auxiliar->currentColumn);
             }
+            (*identation)--;
         }
         else{
             printf("Error in line %d and column %d. Was expected token \"WHILE\"\n", auxiliar->currentLine, auxiliar->currentColumn);
@@ -377,25 +391,26 @@ void ProductionLoop(char *buffer, AuxiliarAtributte *auxiliar, struct table **st
 }
 
 void ProductionCommand(char *buffer, AuxiliarAtributte *auxiliar, struct table **st, FILE *fp, int *identation, Token *tk){
-    (*identation)++;
+
     if(strcmp(tk->name_tk,"IF" )== 0){
-        buildTree(fp, identation, (char*)"SELECTION");   
         (*identation)++;
+        buildTree(fp, identation, (char*)"SELECTION");
+        (*identation)++;   
         buildTree(fp, identation, tk->name_tk);
-        (*identation)++;
         ProductionSelection(buffer, auxiliar, st, fp, identation, tk);
         (*identation)--;
-        (*identation)--;
-        //*tk = getToken(buffer, auxiliar, st);
     }
     else if(strcmp(tk->name_tk, "WHILE")==0 || strcmp(tk->name_tk, "REPEAT")==0){
+        (*identation)++;
         buildTree(fp, identation, (char*)"LOOP");
         (*identation)++;
         ProductionLoop(buffer, auxiliar, st, fp, identation, tk);
         (*identation)--;
-        *tk = getToken(buffer, auxiliar, st);
+        //printf("valor que sai da loop function %s\n", tk->name_tk);
+        //*tk = getToken(buffer, auxiliar, st);
     }
     else if(strcmp(tk->name_tk, "IDENTIFIER")==0){
+        (*identation)++;
         buildTree(fp, identation, (char*)"ASSIGNMENT");
         (*identation)++;
         buildTree(fp, identation, tk->name_tk);
@@ -414,28 +429,30 @@ void ProductionCommandSequence(char *buffer, AuxiliarAtributte *auxiliar, struct
     while(strcmp(tk->name_tk, "IF")==0 || strcmp(tk->name_tk, "WHILE")==0 || strcmp(tk->name_tk, "REPEAT")==0 || strcmp(tk->name_tk, "IDENTIFIER")==0){
         ProductionCommand(buffer, auxiliar, st, fp, identation, tk);
     }
-    (*identation)--;
 }
 
-void ProductionBlock(char *buffer, AuxiliarAtributte *auxiliar, struct table **st, FILE *fp, int *identation, Token *tk){
-    buildTree(fp, identation, (char*)"BLOCK");   
+void ProductionBlock(char *buffer, AuxiliarAtributte *auxiliar, struct table **st, FILE *fp, int *identation, Token *tk){  
+    
     if(strcmp(tk->name_tk, "BEGIN")==0){
         buildTree(fp, identation, tk->name_tk);
-        (*identation)++;
         ProductionVariableDeclaration(buffer, auxiliar, st, fp, identation, tk);
+        //printf("o valor que chega aqui e %s\n", tk->name_tk);
         ProductionCommandSequence(buffer, auxiliar, st, fp, identation, tk);
-        (*identation)--;
+        //printf("o valor que chega aqui e %s\n", tk->name_tk);
         if(strcmp(tk->name_tk, "END")==0){
             (*identation)++;
             buildTree(fp, identation, tk->name_tk);
             (*identation)--;
+            *tk = getToken(buffer, auxiliar, st);
+        }else{
+            printf("Error in line %d and column %d. Was expected token \"END\"\n", auxiliar->currentLine, auxiliar->currentColumn);    
         }
     }
     else{
+        printf("%s\n", tk->name_tk);
         printf("Error in line %d and column %d. Was expected token \"BEGIN\"\n", auxiliar->currentLine, auxiliar->currentColumn);
         return;
     }
-    (*identation)--;
 }
 
 void ProductionS(char *buffer, AuxiliarAtributte *auxiliar, struct table **st, FILE *fp, int *identation){
@@ -446,8 +463,10 @@ void ProductionS(char *buffer, AuxiliarAtributte *auxiliar, struct table **st, F
         if(strcmp(tk.name_tk, "IDENTIFIER")==0){
             buildTree(fp, identation, tk.name_tk);
             tk = getToken(buffer, auxiliar, st);
+            buildTree(fp, identation, (char*)"BLOCK"); 
+            (*identation)++;
             ProductionBlock(buffer, auxiliar, st, fp, identation, &tk);
-        
+            (*identation)--;
         }
         else{
             printf("Error in line %d and column %d. Was expected token \"IDENTIFIER\"\n", auxiliar->currentLine, auxiliar->currentColumn);
@@ -471,6 +490,7 @@ int syntacticAnalyzer(char *buffer, AuxiliarAtributte *auxiliar, struct table **
     fprintf(fp, "%s", "S\n");
     identation++;
     ProductionS(buffer, auxiliar, st, fp, &identation);
+    identation--;
     
     fclose(fp);
     return 0;  

@@ -2,26 +2,8 @@ S
 	PROGRAMA
 	IDENTIFIER
 	BLOCK
-	BEGIN
+		BEGIN
 		VARIABLE_DECLARATION
-			TYPE
-			TWO_POINTS
-			ID_LIST
-				IDENTIFIER
-				ID_LIST_PARTIAL
-					COMMA
-					ID_LIST
-						IDENTIFIER
-						ID_LIST_PARTIAL
-							ε
-			SEMICOLON
-			TYPE
-			TWO_POINTS
-			ID_LIST
-				IDENTIFIER
-				ID_LIST_PARTIAL
-					ε
-			SEMICOLON
 			TYPE
 			TWO_POINTS
 			ID_LIST
@@ -53,9 +35,79 @@ S
 					EXP1'
 						ε
 				SEMICOLON
-			ASSIGNMENT
-				IDENTIFIER
-				ASSIGN
+			LOOP
+				WHILE
+				CONDITION
+					EXP1
+						EXP2
+							EXP3
+								TERM
+									IDENTIFIER
+								EXP3'
+									ε
+							EXP2'
+								ε
+						EXP1'
+							ε
+					RELOP
+					EXP1
+						EXP2
+							EXP3
+								TERM
+									CONSTANT
+										INT
+								EXP3'
+									ε
+							EXP2'
+								ε
+						EXP1'
+							ε
+				CLOSE_PARENTHESES
+				DO
+				BEGIN
+				VARIABLE_DECLARATION
+				COMMAND_SEQUENCE
+					ASSIGNMENT
+						IDENTIFIER
+						ASSIGN
+						EXP1
+							EXP2
+								EXP3
+									TERM
+										IDENTIFIER
+									EXP3'
+										ε
+								EXP2'
+									ε
+							EXP1'
+								ARITHEMETIC_OP
+							EXP2
+								EXP3
+									TERM
+										CONSTANT
+											INT
+									EXP3'
+										ε
+								EXP2'
+									ε
+					SEMICOLON
+				END
+		SELECTION
+			IF
+			OPEN_PARENTHESES
+			CONDITION
+				EXP1
+					EXP2
+						EXP3
+							TERM
+								IDENTIFIER
+							EXP3'
+								ε
+						EXP2'
+							ε
+					EXP1'
+						ε
+				RELOP
 				EXP1
 					EXP2
 						EXP3
@@ -68,89 +120,23 @@ S
 							ε
 					EXP1'
 						ε
-				SEMICOLON
-			SELECTION
-				IF
-					OPEN_PARENTHESES
-					CONDITION
-						EXP1
-							EXP2
-								EXP3
-									TERM
-										IDENTIFIER
-									EXP3'
-										ε
-								EXP2'
+			CLOSE_PARENTHESES
+			THEN
+			BEGIN
+			VARIABLE_DECLARATION
+			COMMAND_SEQUENCE
+				ASSIGNMENT
+					IDENTIFIER
+					ASSIGN
+					EXP1
+						EXP2
+							EXP3
+								TERM
+									CONSTANT
+										INT
+								EXP3'
 									ε
-							EXP1'
+							EXP2'
 								ε
-						RELOP
-						EXP1
-							EXP2
-								EXP3
-									TERM
-										IDENTIFIER
-									EXP3'
-										ε
-								EXP2'
-									ε
-							EXP1'
-								ε
-					CLOSE_PARENTHESES
-					THEN
-						BLOCK
-						BEGIN
-							VARIABLE_DECLARATION
-							COMMAND_SEQUENCE
-								ASSIGNMENT
-									IDENTIFIER
-									ASSIGN
-									EXP1
-										EXP2
-											EXP3
-												TERM
-													IDENTIFIER
-												EXP3'
-													ε
-											EXP2'
-												ε
-										EXP1'
-											ARITHEMETIC_OP
-												+
-											EXP2
-												EXP3
-													TERM
-														CONSTANT
-													EXP3'
-														ε
-												EXP2'
-													ε
-				ELSE
-					BLOCK
-					BEGIN
-						VARIABLE_DECLARATION
-						COMMAND_SEQUENCE
-							ASSIGNMENT
-								IDENTIFIER
-								ASSIGN
-								EXP1
-									EXP2
-										EXP3
-											TERM
-												IDENTIFIER
-											EXP3'
-												ε
-										EXP2'
-											ε
-									EXP1'
-										ARITHEMETIC_OP
-										EXP2
-											EXP3
-												TERM
-													CONSTANT
-												EXP3'
-													ε
-											EXP2'
-												ε
-					END
-END
+						EXP1'
+							ε

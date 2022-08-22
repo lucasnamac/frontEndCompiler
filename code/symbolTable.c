@@ -25,8 +25,6 @@ int addLast(struct table **st, char* name_tk, char* lexeme, int position){
         lastNode->prox = node;
         return 1;
     }
-
-    printf("cai aqui tbm\n");
     return 0;
     
 
@@ -52,4 +50,15 @@ int exists(struct table *st, char *lexeme){
         tmp = tmp->prox;
     }
     return 0;
+}
+
+int getPosition(struct table *st, char *lexeme){
+    struct table *tmp = st;
+    while(tmp!=NULL){
+        if(strcmp(tmp->lexeme, lexeme)==0){
+            return tmp->position;
+        }
+        tmp=tmp->prox;
+    }
+    return -1;    
 }

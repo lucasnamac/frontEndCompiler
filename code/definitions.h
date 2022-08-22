@@ -191,6 +191,7 @@ Token lexicalAnalyzer(char *buffer, AuxiliarAtributte *auxiliar, struct table **
 int addLast(struct table **st, char* name_tk, char* lexeme, int position);
 void printSymbolTable(struct table  *st);
 int exists(struct table *st, char *lexeme);
+int getPosition(struct table *st, char *lexeme);
 
 //Syntatic analyzer
 int syntacticAnalyzer(char *buffer, AuxiliarAtributte *auxiliar, struct table **st);

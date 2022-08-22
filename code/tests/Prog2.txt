@@ -1,0 +1,16 @@
+programa prog2 [ programa com erro sintatico ]
+begin
+    int : x; float: y;
+
+    x := 0;
+
+    while (x~=10) do
+    begin
+        x := x+1;
+    end
+
+    if (x = 10) then
+    begin
+        y:=1 [erro aqui]
+    end
+end

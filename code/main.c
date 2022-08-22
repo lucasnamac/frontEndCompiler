@@ -13,9 +13,9 @@ int main(){
     auxiliar.ini = 0;
     auxiliar.prox = 0;
     auxiliar.positionSymbolTable = 0;
-    auxiliar.currentColumn = 0;
-    auxiliar.currentLine = 0;
-
+    auxiliar.currentColumn = 1;
+    auxiliar.currentLine = 1;
+    
     FILE* file = fopen("./tests/myprogram.txt", "r");
 
     if(file==NULL){
@@ -28,8 +28,16 @@ int main(){
 
     fread(buffer, sizeof(char), 4096, file);
 
-    syntacticAnalyzer(buffer,  &auxiliar,  &st);
-
+    //syntacticAnalyzer(buffer,  &auxiliar,  &st);
+    
+    while(1){
+        Token tk = lexicalAnalyzer(buffer, &auxiliar, &st);
+        if(strcmp(tk.name_tk, "$")==0){
+            break;
+        }
+    }
+    
+    
 
     printSymbolTable(st);    
     free(buffer);
